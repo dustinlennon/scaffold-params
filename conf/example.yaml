@@ -1,0 +1,12 @@
+env_base: &base
+  app_path: ./app
+
+env_common: &common
+  <<: *base
+  logconf_path: ./conf/logger.yaml
+  timezone: US/Pacific
+  template_path: ./templates
+
+env:
+  <<: *common
+ 

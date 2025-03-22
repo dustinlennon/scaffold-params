@@ -1,0 +1,22 @@
+loggers:
+- level: WARNING
+
+- qualname: __main__
+  level: INFO
+
+#
+# The following are pedagogical.  In reality, one shouldn't
+# use logging before the LoggerFactory is configured, and 
+# any activity from app.base_params would certainly happen
+# prior to that event.
+#
+# - qualname: app
+#   level: INFO
+#   propagate: False
+#   logfile: logs/app.log
+#   add_console: True
+
+# - qualname: app.base_params
+#   level: DEBUG
+#   propagate: True
+#   logfile: logs/base_params.log
