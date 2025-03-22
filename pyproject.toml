@@ -8,7 +8,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pyapp-scaffold"
+name = "scaffold"
 version = "0.0.1"
 authors = [
   { name="Dustin Lennon", email="dustin.lennon@gmail.com" },
