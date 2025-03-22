@@ -5,7 +5,7 @@ from pathlib import Path
 import logging
 from logging.handlers import RotatingFileHandler
 
-from app.config import get_config
+from scaffold.config import get_config
 
 class LoggerFactory(object):
   _state = None

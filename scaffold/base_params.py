@@ -7,10 +7,10 @@ import re
 import argparse
 import textwrap
 
-from app import _printf_debug
-from app.config import get_config
-from app.dotenv_reader import DotenvReader
-from app.exception_throwing_parser import ExceptionThrowingParser, ParserFallbackException
+from scaffold import _printf_debug
+from scaffold.config import get_config
+from scaffold.dotenv_reader import DotenvReader
+from scaffold.exception_throwing_parser import ExceptionThrowingParser, ParserFallbackException
 
 #- BaseParams -----------------------------------------------------------------
 

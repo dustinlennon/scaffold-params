@@ -7,8 +7,8 @@ python3 example.py \
   --timezone US/Eastern
 """
 
-from app.base_params import BaseParams
-from app.params_mixin import *
+from scaffold.base_params import BaseParams
+from scaffold.mixins import *
 
 if __name__ == '__main__':
 

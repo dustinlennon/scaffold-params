@@ -7,8 +7,8 @@ loggers:
 #
 # The following are pedagogical.  In reality, one shouldn't
 # use logging before the LoggerFactory is configured, and 
-# any activity from app.base_params would certainly happen
-# prior to that event.
+# any activity from app.base_params would likely happen
+# prior to that happening.
 #
 # - qualname: app
 #   level: INFO
