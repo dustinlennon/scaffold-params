@@ -3,7 +3,7 @@ A sample run with multiple timezone overrides
 
 KEYSERVER_TIMEZONE=UTC \
 PRINTF_DEBUG=True \
-python3 example.py \
+python3 samples/basic.py \
   --timezone US/Eastern
 """
 
@@ -15,10 +15,10 @@ if __name__ == '__main__':
   class CommonParams(NowMixin, LoggerInitMixin, JinjaTemplateMixin):
     pass
 
-  class ExampleParams(BaseParams, CommonParams):
-    _prefix = "EXAMPLE"
+  class BasicParams(BaseParams, CommonParams):
+    _prefix = "BASIC"
 
-  params = ExampleParams.build()
+  params = BasicParams.build()
   args = params.parse_args()
 
   # NowMixin provides params.now()
@@ -29,7 +29,7 @@ if __name__ == '__main__':
   logger.info(msg)
 
   # JinjaTemplateMixin provides 'params.get_template'
-  template = params.get_template("example.j2")
+  template = params.get_template("basic.j2")
   content = template.render(
     msg = msg
   )

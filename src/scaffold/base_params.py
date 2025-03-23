@@ -25,6 +25,7 @@ class BaseParams(ABC):
       - environment variable
       - YAML setting
     """
+
     cfg = get_config(config_path)
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
@@ -114,18 +115,11 @@ class BaseParams(ABC):
 
     try:
       instance = cls.from_dotenv()
-    except FileNotFoundError as e:
+    except KeyError as e:
       argparse.ArgumentParser.exit(*exit_args)
+    else:
+      return instance
 
-    return instance
-
-  @classmethod
-  def from_env(cls):
-    _printf_debug("searching for config: trying from_env()")
-    env_name = f"{cls._prefix}_CONFIG_PATH"
-    config = os.environ[env_name]
-    instance = cls(config)
-    return instance
 
   @classmethod
   def from_args(cls, Parser = argparse.ArgumentParser):
@@ -139,6 +133,14 @@ class BaseParams(ABC):
     return instance
 
   @classmethod
+  def from_env(cls):
+    _printf_debug("searching for config: trying from_env()")
+    env_name = f"{cls._prefix}_CONFIG_PATH"
+    config = os.environ[env_name]
+    instance = cls(config)
+    return instance
+
+  @classmethod
   def from_dotenv(cls):
     _printf_debug("searching for config: trying from_dotenv()")
     locs = [ p for p in 
@@ -148,8 +150,14 @@ class BaseParams(ABC):
       ] if p
     ]
 
-    result = DotenvReader(locs).read()
-    config_file = result.get(f"{cls._prefix}_CONFIG_PATH")
+    key = f"{cls._prefix}_CONFIG_PATH"
+    try:
+      result = DotenvReader(locs).read()
+    except FileNotFoundError:
+      # treat a non-existing dotenv file like an empty dict
+      raise KeyError(key)
+    else:
+      config_file = result[key]
 
     instance = cls(config_file)
     return instance

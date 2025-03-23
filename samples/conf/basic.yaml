@@ -3,9 +3,9 @@ env_base: &base
 
 env_common: &common
   <<: *base
-  logconf_path: ./conf/logger.yaml
+  logconf_path: ./samples/conf/logger.yaml
   timezone: US/Pacific
-  template_path: ./templates
+  template_path: ./samples/templates
 
 env:
   <<: *common

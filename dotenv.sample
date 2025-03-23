@@ -1,1 +1,1 @@
-EXAMPLE_CONFIG_PATH=${HOME}/pyapp-scaffold/conf/example.yaml
+BASIC_CONFIG_PATH=${HOME}/samples/conf/basic.yaml
