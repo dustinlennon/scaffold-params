@@ -25,3 +25,8 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/dustinlennon/scaffold"
 Issues = "https://github.com/dustinlennon/scaffold/issues"
+
+[tool.setuptools.packages.find]
+where = ["src", "."]
+include = ["scaffold*", "samples"]
+

@@ -1,1 +1,2 @@
-recursive-include samples *.py *.yaml *.j2
+graft src/scaffold
+graft samples

@@ -19,34 +19,27 @@ DEST=$1
 DEST=${DEST:-.}
 DEST=$(realpath $DEST)
 
-cleanup() {
-	if [ -d "$tmpdir" ]; then
-		echo removing $tmpdir
-		rm -rf $tmpdir
-	fi
-}
-
-trap cleanup EXIT
-
 echo creating $DEST
 mkdir -p $DEST
 
-# echo creating $tmpdir
-# tmpdir=$(mktemp -d)
-
-# pushd $tmpdir
-# git clone https://github.com/dustinlennon/scaffold .
-# popd 
-
-# cp -r $tmpdir/samples $DEST
-
 pushd $DEST
+if [ ! -f Pipfile ]; then
+	pipenv --python /usr/bin/python3
+fi
+
+# pipenv install file://${HOME}/Workspace/Sandbox/scaffold#egg=scaffold
+pipenv install git+https://github.com/dustinlennon/scaffold#egg=scaffold
+
+# create a dotenv file
 cat << EOF > dotenv
 BASIC_CONFIG_PATH=${DEST}/samples/conf/basic.yaml
 EOF
 
-if [ ! -f Pipfile ]; then
-	pipenv --python /usr/bin/python3
-fi
-pipenv install git+https://github.com/dustinlennon/scaffold#egg=scaffold
+# copy samples out of site-package directory
+venv=$(pipenv --venv)
+site_packages=$(find $venv -type d -name "site-packages")
+cp -r ${site_packages}/samples .
+
+# remove any __pycache__ subdirectories
+find ./samples -type d -name "__pycache__" | xargs rm -rf
 popd
