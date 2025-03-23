@@ -2,3 +2,4 @@ __pycache__
 .env
 dotenv
 dist
+scaffold.egg-info

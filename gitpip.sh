@@ -19,9 +19,6 @@ DEST=$1
 DEST=${DEST:-.}
 DEST=$(realpath $DEST)
 
-echo $DEST
-exit 0
-
 cleanup() {
 	if [ -d "$tmpdir" ]; then
 		echo removing $tmpdir
@@ -34,18 +31,18 @@ trap cleanup EXIT
 echo creating $DEST
 mkdir -p $DEST
 
-echo creating $tmpdir
-tmpdir=$(mktemp -d)
+# echo creating $tmpdir
+# tmpdir=$(mktemp -d)
 
-pushd $tmpdir
-git clone https://github.com/dustinlennon/scaffold .
-popd 
+# pushd $tmpdir
+# git clone https://github.com/dustinlennon/scaffold .
+# popd 
 
-cp -r $tmpdir/samples $DEST
+# cp -r $tmpdir/samples $DEST
 
 pushd $DEST
 cat << EOF > dotenv
-BASIC_CONFIG_PATH=${full_path}/samples/conf/basic.yaml
+BASIC_CONFIG_PATH=${DEST}/samples/conf/basic.yaml
 EOF
 
 if [ ! -f Pipfile ]; then
