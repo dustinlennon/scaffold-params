@@ -30,10 +30,10 @@ Issues = "https://github.com/dustinlennon/scaffold/issues"
 include-package-data = true
 
 # be explicit with find inclusions
-[tool.setuptools.packages.find]
-where = ["src/"]
-include = [
-  "scaffold.params*",
-  "scaffold.samples"
-]
+# [tool.setuptools.packages.find]
+# where = ["src/"]
+# include = [
+#   "scaffold.params*",
+#   "scaffold.samples"
+# ]
 
