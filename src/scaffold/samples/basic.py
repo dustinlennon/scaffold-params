@@ -7,8 +7,8 @@ python3 samples/basic.py \
   --timezone US/Eastern
 """
 
-from scaffold.base_params import BaseParams
-from scaffold.mixins import *
+from scaffold.params.base_params import BaseParams
+from scaffold.params.mixins import *
 
 if __name__ == '__main__':
 

@@ -1,0 +1,12 @@
+env_base: &base
+  app_path: ./app
+
+env_common: &common
+  <<: *base
+  logconf_path: !env ${SCAFFOLD_PATH}/samples/conf/logger.yaml
+  timezone: US/Pacific
+  template_path: !env ${SCAFFOLD_PATH}/samples/templates
+
+env:
+  <<: *common
+ 

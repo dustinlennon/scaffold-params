@@ -1,1 +1,1 @@
-recursive-include samples *.yaml *.j2
+# recursive-include src/scaffold/samples *.yaml *.j2
