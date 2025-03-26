@@ -30,16 +30,12 @@ fi
 # pipenv install file://${HOME}/Workspace/Sandbox/scaffold#egg=scaffold
 pipenv install git+https://github.com/dustinlennon/scaffold#egg=scaffold
 
-# create a dotenv file
+# make samples easily available
+scaffold_path=$(pipenv run python -c "import scaffold; print(scaffold.__path__[0])")
+
+ln -s ${scaffold_path}/samples
+
 cat << EOF > dotenv
-BASIC_CONFIG_PATH=${DEST}/samples/conf/basic.yaml
+BASIC_CONFIG_PATH=${scaffold_path}/samples/conf/basic.yaml
 EOF
 
-# copy samples out of site-package directory
-venv=$(pipenv --venv)
-site_packages=$(find $venv -type d -name "site-packages")
-cp -r ${site_packages}/samples .
-
-# remove any __pycache__ subdirectories
-find ./samples -type d -name "__pycache__" | xargs rm -rf
-popd
