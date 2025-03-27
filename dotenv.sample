@@ -1,1 +1,2 @@
-BASIC_CONFIG_PATH=${HOME}/samples/conf/basic.yaml
+# In some scenarios, one might prefer to specify an absolute path.
+BASIC_CONFIG_PATH=${PWD}/src/scaffold/samples/conf/basic.yaml

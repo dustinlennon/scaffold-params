@@ -1,12 +1,13 @@
 #!/bin/bash
-
-# gitpip.sh 
-# 	clones the scaffold repo into a temporary directory;
-#	creates a destination directory, `DEST`;
-# 	copies the `./samples` directory from the repo into `DEST/sample`;
-# 	dynamically creates `DEST/dotenv` for the "basic" sample;
-# 	if missing, creates `DEST/Pipfile`--the pipenv virtual environment;
-# 	installs "scaffold" into the pipenv
+#
+# Create a pipenv in the provided directory, or use an existing pipenv if 
+# available. Install the scaffold-params distribution from github.  Finally,
+# link the samples and create a dotenv file that to run `basic.py` without 
+# an explicit --config parameter.
+#
+# syntax:
+#   gitpip.sh dest_dir
+#
 
 args=("$@")
 
@@ -27,8 +28,8 @@ if [ ! -f Pipfile ]; then
 	pipenv --python /usr/bin/python3
 fi
 
-# pipenv install file://${HOME}/Workspace/Sandbox/scaffold#egg=scaffold
-pipenv install git+https://github.com/dustinlennon/scaffold#egg=scaffold
+# pipenv install file://${HOME}/Workspace/Sandbox/scaffold-params#egg=scaffold
+pipenv install git+https://github.com/dustinlennon/scaffold-params#egg=scaffold
 
 # make samples easily available
 scaffold_path=$(pipenv run python -c "import scaffold; print(scaffold.__path__[0])")
