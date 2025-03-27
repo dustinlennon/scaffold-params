@@ -81,20 +81,20 @@ options:
                     '/home/dnlennon/Workspace/Sandbox/scaffold-params/src/scaffold/samples/templates'
 ```
 
-Above, we see a number of command line flags, a corresponding environment variable, and the key for a default value defined in the config yaml.  The help output also shows a working value of each parameter; that is, the value that will be used should the command line parameter be left unspecified.  
+Above, there are a number of command line flags, each with a corresponding environment variable and the key for a default value defined in the config yaml.  The output also shows a working value of each parameter; that is, the value that will be used should the command line parameter be left unspecified.  
 
 
 Templatized Parameters
 ====
 
-[basic.py], backed by [basic.yaml](https://github.com/dustinlennon/scaffold-params/blob/main/src/scaffold/samples/conf/basic.yaml), provides a simple example of how we templatize parameters.
+[basic.py](https://github.com/dustinlennon/scaffold-params/blob/main/src/scaffold/samples/basic.py), backed by [basic.yaml](https://github.com/dustinlennon/scaffold-params/blob/main/src/scaffold/samples/conf/basic.yaml), provides a simple example of how we templatize parameters.
 
-The key structure here is `BasicParams` which derives from `CommonParams` which, in the background, derives from `BaseParams`.  Each of these defines a subset of parameters with a well defined fallback scheme.  That is, a command line parameter falls back to an environment variable which falls back to a YAML definition.  On the other hand, the YAML file defines the collection of parameters and provides default values.  We use the YAML file to dynamically create an `argparse.ArgumentParser` object.
+The key structure here (see code below) is `BasicParams`.  This derives from `BaseParams` and `CommonParams`, the latter composed of three `BaseMixin` mixins.  Each of these mixins defines a subset of parameters utilizing a well-defined fallback scheme.  Specifically, a command line parameter falls back to an environment variable which falls back to a value specified in a YAML configuration file.  Alongside these default values, the YAML file provides the necessary metadata to dynamically create an `argparse.ArgumentParser` object.
 
 The corresponding code follows:
 
 ```bash
-# basic.py (excerpt)
+# samples/basic.py (excerpt)
 
 from scaffold.params.base_params import BaseParams
 from scaffold.params.mixins import *
@@ -114,7 +114,7 @@ if __name__ == '__main__':
 We utilize YAML references to emphasize how parameter collections are built up over the three BaseParams derived classes.  In reality, these could be combined: the only component of the YAML that is parsed internally is `env`. 
 
 ```yaml
-# basic.yaml
+# samples/conf/basic.yaml
 env_base: &base
   app_path: ./app
 
@@ -138,7 +138,7 @@ Mixins are a useful way to package and group functionality that is associated wi
 The idea is to keep it simple.  We inherit from `BaseMixin` and implement the `assign_args` method.  On initialization, we only need copy the provided timezone from `args` to the instance.  For post-initialization use, `NowMixin` provides the `now` method that ensures that a datetime instance is timezone aware and created with a timezone specified apriori.
 
 ```python
-# mixins/now_mixin.py
+# params/mixins/now_mixin.py
 import datetime, pytz
 from .base_mixin import BaseMixin
 
@@ -196,3 +196,14 @@ scaffold-params$ \
       --config src/scaffold/samples/conf/basic.yaml
 >>> searching for config: trying from_args()     <------------------- using --config 
 ```
+
+### dotenv
+
+The dotenv file, if available, provides a default for environment variables.  For example,
+
+```
+# ./dotenv
+BASIC_CONFIG_PATH=${PWD}/scaffold-params/src/scaffold/samples/conf/basic.yaml
+```
+
+This can be useful when code needs to be invoked from outside the working directory.  One examples is via systemd, where the dotenv may be specified by an `EnvironmentFile`.

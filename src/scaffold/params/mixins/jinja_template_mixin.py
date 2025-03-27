@@ -4,7 +4,6 @@ from .base_mixin import BaseMixin
 
 class JinjaTemplateMixin(BaseMixin):
   def assign_args(self, args):
-    # _printf_debug(f"JinjaTemplateMixin.assign_args()")
     super().assign_args(args)
     self._j2env = jinja2.Environment(
       loader = jinja2.FileSystemLoader(str(args.template_path))

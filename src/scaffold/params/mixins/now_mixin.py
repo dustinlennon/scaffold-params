@@ -3,7 +3,6 @@ from .base_mixin import BaseMixin
 
 class NowMixin(BaseMixin):
   def assign_args(self, args):
-    # _printf_debug(f"NowMixin.assign_args()")
     super().assign_args(args)
     self.timezone = args.timezone
 
