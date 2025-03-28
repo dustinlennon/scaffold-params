@@ -8,10 +8,11 @@ Quickstart
 ```bash
 git clone git@github.com:dustinlennon/scaffold-params.git
 cd scaffold-params/
-pipenv install -e .
+pipenv run python3 src/scaffold/samples/basic.py \
+  --config src/scaffold/samples/conf/basic.yaml
 ```
 
-The distribution also includes a [github.sh](https://github.com/dustinlennon/scaffold-params/blob/main/gitpip.sh) script.  This assumes a pipenv installation, or creates one if necessary.  It then installs `scaffold-params` into the pivenv, provides a symbolic link to the `samples`, and dynamically creates a dotenv file for running `basic.py` without an explicit --config parameter.
+The distribution also includes a [github.sh](https://github.com/dustinlennon/scaffold-params/blob/main/gitpip.sh) script.  This assumes a pipenv installation exists in the specified directory.  If it doesn't, the script creates a pipenv environment.  It then installs `scaffold-params` into the pivenv, provides a symbolic link to the `samples`, and dynamically creates a dotenv file for running `basic.py` without an explicit --config parameter.
 
 
 First Run

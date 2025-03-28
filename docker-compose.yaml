@@ -1,3 +1,6 @@
+# To create the image and supporting file system components, run
+# the ./build.sh script first.
+
 name: basic
 
 services:
