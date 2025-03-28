@@ -1,22 +1,22 @@
+# Notes
+#
+#   An item without a `qualname` will be treated as a root logger provided it
+#   is instantiated.  
+#   
+#   If `logfile`` is not specified, LoggerFactory will attach a console handler.
+#
+#   `propagate`, a boolean,  will have no effect if the root logger is not
+#   instantiated.  It defaults to True, as in the logging package.
+#
+#   `add_console`, a boolean, is available, and introduces an additional
+#    console handler for the given logger.  It defaults to False.
+
 loggers:
 - level: WARNING
 
 - qualname: __main__
   level: INFO
+  logfile: basic.log
+  propagate: False
+  add_console: True
 
-#
-# The following are pedagogical.  In reality, one shouldn't
-# use logging before the LoggerFactory is configured, and 
-# any activity from app.base_params would likely happen
-# prior to that happening.
-#
-# - qualname: app
-#   level: INFO
-#   propagate: False
-#   logfile: logs/app.log
-#   add_console: True
-
-# - qualname: app.base_params
-#   level: DEBUG
-#   propagate: True
-#   logfile: logs/base_params.log

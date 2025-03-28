@@ -1,0 +1,25 @@
+name: basic
+
+services:
+  basic:
+    # docker compose -f docker-compose.yaml run --rm basic
+    image: scaffold-sample:latest
+
+    command: >
+      python src/scaffold/samples/basic.py
+        --config src/scaffold/samples/conf/basic.yaml
+
+    environment:
+    - PYTHONPATH=/home/basic/src
+
+    volumes:
+    - logs:/home/basic/logs
+
+    stop_grace_period: 1s
+
+volumes:
+  logs:
+    driver_opts:
+      o: bind
+      type: local
+      device: /var/log/scaffold-logs

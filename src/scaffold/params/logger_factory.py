@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 from pathlib import Path
 
@@ -6,6 +7,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from scaffold.params.config import get_config
+from scaffold.params import _printf_debug
 
 class LoggerFactory(object):
   _state = None
@@ -17,8 +19,8 @@ class LoggerFactory(object):
       self._initialize()
 
   def _initialize(self):
-    self._handlers  = {}
-    self._config    = None
+    self._handlers    = {}
+    self._configured  = False
 
     formatter_args = {
       'style' : '{',
@@ -35,19 +37,30 @@ class LoggerFactory(object):
 
     setattr(type(self), "_state", self.__dict__)
 
-  def configure(self, config_file):
+  def configure(self, config_file, logs_path):
     config = get_config(config_file, preprocess = False)
-    self._config = config
+    self._configured  = True
+    self._config      = config
+    self._logs_path   = logs_path
 
-  def handler(self, logfile):
+  def assert_writable_logfile(self, logfile) -> str:
+    p = Path(self._logs_path).joinpath(logfile).absolute()
+    p.parent.mkdir(parents = True, exist_ok = True)
+
+    with open(p, "a") as f:
+      pass
+
+    p.chmod(0o660)
+    return str(p)
+
+  def handler(self, logfile) -> logging.FileHandler:
     handler = self._handlers.get(logfile)
     if handler:
       return handler
 
     try:
-      p = Path(logfile).absolute()
-      p.parent.mkdir(exist_ok = True)
-    except (PermissionError,) as e:
+      logfile = self.assert_writable_logfile(logfile)
+    except (PermissionError, FileNotFoundError,) as e:
       handler = self._console_handler
     else:
       handler = RotatingFileHandler(logfile, maxBytes = 1e7, backupCount=3)
@@ -57,7 +70,7 @@ class LoggerFactory(object):
     return handler
 
   def __call__(self, qualname = None) -> logging.Logger:
-    if self._config is None:
+    if self._configured == False:
       raise RuntimeError("LoggerFactory must call configure prior to instantiating loggers")
 
     items = [ item for item in self._config['loggers']
@@ -70,7 +83,8 @@ class LoggerFactory(object):
     item  = items[0]
 
     logfile     = item.get("logfile")
-    add_console = item.get("add_console")
+    add_console = item.get("add_console", False)
+    propagate   = item.get("propagate", True)
     level       = self.map_level(
                     item.get("level", "WARNING")
                   )
@@ -79,6 +93,7 @@ class LoggerFactory(object):
 
     if logfile:
       handler = self.handler(logfile)
+      
       if handler not in logger.handlers:
         logger.addHandler(handler)
     else:
@@ -86,8 +101,9 @@ class LoggerFactory(object):
 
     if add_console:
       if self._console_handler not in logger.handlers:
-        logger.addHandler(self._console_handler)
+        logger.addHandler(self._console_handler)    
 
+    logger.propagate = propagate
     logger.setLevel(level)
     return logger
   
@@ -97,15 +113,17 @@ class LoggerFactory(object):
     return level
 
 
-# if __name__ == '__main__':
-#   factory = LoggerFactory()
-#   factory.configure("conf/logger.yaml")
+if __name__ == '__main__':
+  factory = LoggerFactory()
+  factory.configure(
+    config_file = "src/scaffold/samples/conf/logger.yaml", 
+    logs_path = "/tmp/scaffold-logs"
+  )
 
-#   root = factory()
-#   root.warning("from the root logger")
+  # As in `logging`, one should explictly create the root logger if
+  # it is needed.
+  root = factory()
+  root.warning("from the root logger")
 
-#   app = factory("app")
-#   app.info("from the app logger")
-
-#   bp = factory("app.base_params")
-#   bp.debug("from the base_params logger")
+  main = factory("__main__")
+  main.info("from the __main__ logger")

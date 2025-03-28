@@ -4,3 +4,6 @@ dotenv
 build
 dist
 scaffold.egg-info
+archive.tgz
+scaffold-logs
+logs

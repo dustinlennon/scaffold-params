@@ -1,12 +1,15 @@
 env_base: &base
-  app_path: ./app
+  install_path: !env ${PWD}
 
-env_common: &common
-  <<: *base
-  logconf_path: !env ${SCAFFOLD_PATH}/samples/conf/logger.yaml
+env_timezone: &timezone
   timezone: US/Pacific
+
+env_logger: &logger
+  log_config_path: !env ${SCAFFOLD_PATH}/samples/conf/logger.yaml
+  logs_path: ./logs
+
+env_template: &template
   template_path: !env ${SCAFFOLD_PATH}/samples/templates
 
 env:
-  <<: *common
- 
+  <<: [*base, *logger, *timezone, *template]

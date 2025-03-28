@@ -93,7 +93,7 @@ class BaseParams(ABC):
     # the mixin hook
     # clsname = type(self).__name__; _printf_debug(f"{clsname}.assign_args()")
     super().assign_args(args)
-    self.app_path = args.app_path
+    self.install_path = str(args.install_path)
 
   @classmethod
   def build(cls):

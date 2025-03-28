@@ -61,24 +61,28 @@ pipenv run python3 src/scaffold/samples/basic.py \
 
 ```
 Loading .env environment variables...
-usage: basic.py [-h] [--config] [--app-path] [--logconf-path] [--timezone] [--template-path]
+usage: basic.py [-h] [--config] [--template-path] [--timezone] [--log-config-path] [--logs-path] [--install-path]
 
 options:
-  -h, --help        show this help message and exit
-  --config          BASIC_CONFIG_PATH         <dotenv>
-                    'src/scaffold/samples/conf/basic.yaml'
-                    
-  --app-path        BASIC_APP_PATH            env.app_path
-                    './app'
-                    
-  --logconf-path    BASIC_LOGCONF_PATH        env.logconf_path
-                    '/home/dnlennon/Workspace/Sandbox/scaffold-params/src/scaffold/samples/conf/logger.yaml'
-                    
-  --timezone        BASIC_TIMEZONE            env.timezone
-                    'US/Pacific'
-                    
-  --template-path   BASIC_TEMPLATE_PATH       env.template_path
-                    '/home/dnlennon/Workspace/Sandbox/scaffold-params/src/scaffold/samples/templates'
+  -h, --help          show this help message and exit
+  --config            BASIC_CONFIG_PATH         <dotenv>
+                      'src/scaffold/samples/conf/basic.yaml'
+                      
+  --template-path     BASIC_TEMPLATE_PATH       env.template_path
+                      '/home/dnlennon/Workspace/Sandbox/scaffold-params/src/scaffold/samples/templates'
+                      
+  --timezone          BASIC_TIMEZONE            env.timezone
+                      'US/Pacific'
+                      
+  --log-config-path   BASIC_LOG_CONFIG_PATH     env.log_config_path
+                      '/home/dnlennon/Workspace/Sandbox/scaffold-params/src/scaffold/samples/conf/logger.yaml'
+                      
+  --logs-path         BASIC_LOGS_PATH           env.logs_path
+                      './logs'
+                      
+  --install-path      BASIC_INSTALL_PATH        env.install_path
+                      '/home/dnlennon/Workspace/Sandbox/scaffold-params'
+                      
 ```
 
 Above, there are a number of command line flags, each with a corresponding environment variable and the key for a default value defined in the config yaml.  The output also shows a working value of each parameter; that is, the value that will be used should the command line parameter be left unspecified.  
@@ -116,16 +120,20 @@ We utilize YAML references to emphasize how parameter collections are built up o
 ```yaml
 # samples/conf/basic.yaml
 env_base: &base
-  app_path: ./app
+  install_path: !env ${PWD}
 
-env_common: &common
-  <<: *base
-  logconf_path: !env ${SCAFFOLD_PATH}/samples/conf/logger.yaml
+env_timezone: &timezone
   timezone: US/Pacific
+
+env_logger: &logger
+  log_config_path: !env ${SCAFFOLD_PATH}/samples/conf/logger.yaml
+  logs_path: ./logs
+
+env_template: &template
   template_path: !env ${SCAFFOLD_PATH}/samples/templates
 
 env:
-  <<: *common
+  <<: [*base, *logger, *timezone, *template]
 ```
 
 The YAML keys defined in `env` have a correspondence with command line flags and environment variable names.  E.g., "timezone" (YAML) becomes "--timezone" (argparse) and "BASIC_TIMEZONE" (env var); the "BASIC" prefix is picked up from the class variable, `_prefix`.
