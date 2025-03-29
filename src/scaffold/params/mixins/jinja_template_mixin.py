@@ -1,6 +1,6 @@
 
 import jinja2
-from .base_mixin import BaseMixin
+from scaffold.params.base_mixin import BaseMixin
 
 class JinjaTemplateMixin(BaseMixin):
   def assign_args(self, args):

@@ -1,7 +1,6 @@
 
 from scaffold.params.logger_factory import LoggerFactory, logging
-from .base_mixin import BaseMixin
-
+from scaffold.params.base_mixin import BaseMixin
 
 class LoggerInitMixin(BaseMixin):
   def assign_args(self, args):

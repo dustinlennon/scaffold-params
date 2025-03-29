@@ -1,20 +1,19 @@
 from typing import Optional
 
-from abc import ABC
-
 import os
 import re
 import argparse
 import textwrap
 
 from scaffold.params import _printf_debug
+from scaffold.params.base_mixin import BaseMixin
 from scaffold.params.config import get_config
 from scaffold.params.dotenv_reader import DotenvReader
 from scaffold.params.exception_throwing_parser import ExceptionThrowingParser, ParserFallbackException
 
 #- BaseParams -----------------------------------------------------------------
 
-class BaseParams(ABC):
+class BaseParams(BaseMixin):
   _prefix : str 
   _opt_path : Optional[str] = None
 
@@ -41,9 +40,9 @@ class BaseParams(ABC):
     for name, default_value in vars(cfg.env).items():
       full_name   = f"{self._prefix}_{name}"
 
-      env_name    = self.env_name(full_name)
-      attr_name   = self.attr_name(name)
-      flag_name   = self.flag_name(name)
+      env_name    = self.map_env_name(full_name)
+      attr_name   = self.map_attr_name(name)
+      flag_name   = self.map_flag_name(name)
 
       value = os.environ.get(env_name, default_value)
       setattr(self, attr_name, value)
@@ -61,49 +60,51 @@ class BaseParams(ABC):
         help=help
       )
 
-    self.parser = parser
+    self.aux      = vars(cfg).get("aux")
+    self._cfg     = cfg
+    self._parser  = parser
 
   @staticmethod
-  def env_name(s):
+  def map_env_name(s):
     # alphanumeric, underscore, uppercased
     s = re.sub("-", "_", s)
     s = re.sub("[^_A-Za-z0-9]", "", s)
     return s.upper()
 
   @staticmethod
-  def attr_name(s):
+  def map_attr_name(s):
     # alphanumeric, underscore, lowercased
     s = re.sub("-", "_", s)
     s = re.sub("[^_A-Za-z0-9]", "", s)
     return s.lower()
   
   @staticmethod
-  def flag_name(s):
+  def map_flag_name(s):
     # alphanumeric, hyphenated, lowercased
     s = re.sub("_", "-", s)
     s = re.sub("[^-A-Za-z0-9]", "", s)
     return s.lower()
 
-  def parse_args(self, args = None, namespace = None):
-    args = self.parser.parse_args(args, namespace)
+  def _parse_args(self, args = None, namespace = None):
+    args = self._parser.parse_args(args, namespace)
     self.assign_args(args)
-    return args
+    self._args = args
 
   def assign_args(self, args):
     # the mixin hook
-    # clsname = type(self).__name__; _printf_debug(f"{clsname}.assign_args()")
     super().assign_args(args)
     self.install_path = str(args.install_path)
 
   @classmethod
-  def build(cls):
+  def build(cls, args = None, namespace = None):
     instance = None
 
     try:
-      instance = cls.from_args(Parser = ExceptionThrowingParser)
+      instance = cls.from_args(Parser = ExceptionThrowingParser, args = args, namespace = namespace)
     except ParserFallbackException as e:
       exit_args = (e.parser, 2, str(e))
     else:
+      instance._parse_args(args, namespace)
       return instance
 
     try:
@@ -111,6 +112,7 @@ class BaseParams(ABC):
     except KeyError:
       pass
     else:
+      instance._parse_args(args, namespace)
       return instance
 
     try:
@@ -118,17 +120,18 @@ class BaseParams(ABC):
     except KeyError as e:
       argparse.ArgumentParser.exit(*exit_args)
     else:
+      instance._parse_args(args, namespace)
       return instance
 
 
   @classmethod
-  def from_args(cls, Parser = argparse.ArgumentParser):
+  def from_args(cls, Parser = argparse.ArgumentParser, args = None, namespace = None):
     _printf_debug("searching for config: trying from_args()")
     parser = Parser()
     parser.add_argument("--config", required = True, help = "a yaml config file")
 
-    args, _ = parser.parse_known_args()
-    instance = cls(args.config)
+    args, _   = parser.parse_known_args(args, namespace)
+    instance  = cls(args.config)
 
     return instance
 
@@ -163,4 +166,12 @@ class BaseParams(ABC):
     return instance
 
 
+# if __name__ == '__main__':
+#   import shlex
+#   class Params(BaseParams):
+#     _prefix = "PARAMS"
+
+#   params = Params.build(
+#     shlex.split("--config ./src/scaffold/samples/conf/basic.yaml")
+#   )
 

@@ -19,7 +19,6 @@ if __name__ == '__main__':
     _prefix = "BASIC"
 
   params = BasicParams.build()
-  args = params.parse_args()
 
   # NowMixin provides params.now()
   msg = f"The time is: {params.now().strftime("%H:%M %Z")}"

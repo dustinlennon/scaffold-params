@@ -1,5 +1,5 @@
 import datetime, pytz
-from .base_mixin import BaseMixin
+from scaffold.params.base_mixin import BaseMixin
 
 class NowMixin(BaseMixin):
   def assign_args(self, args):

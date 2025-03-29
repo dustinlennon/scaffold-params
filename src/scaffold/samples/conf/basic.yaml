@@ -13,3 +13,6 @@ env_template: &template
 
 env:
   <<: [*base, *logger, *timezone, *template]
+
+aux:
+  version: 0.0.1
