@@ -1,3 +1,4 @@
+from scaffold.params import _printf_debug
 class BaseMixin(object):
   def assign_args(self, args):
-    pass
+    _printf_debug("BaseMixin.assign_args")

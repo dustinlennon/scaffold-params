@@ -92,6 +92,7 @@ class BaseParams(BaseMixin):
 
   def assign_args(self, args):
     # the mixin hook
+    _printf_debug("BaseParams.assign_args")
     super().assign_args(args)
     self.install_path = str(args.install_path)
 
