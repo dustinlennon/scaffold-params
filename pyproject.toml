@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scaffold"
-version = "0.0.1"
+# version = "0.0.1"
+dynamic = ["version"]
 authors = [
   { name="Dustin Lennon", email="dustin.lennon@gmail.com" },
 ]
@@ -13,7 +14,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+    "Operating System :: POSIX",
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
@@ -28,6 +29,10 @@ Issues = "https://github.com/dustinlennon/scaffold/issues"
 
 [tool.setuptools]
 include-package-data = true
+
+[tool.setuptools.dynamic]
+version = {file = "version"} 
+dependencies = {file = "requirements.txt"}
 
 # be explicit with find inclusions
 # [tool.setuptools.packages.find]
