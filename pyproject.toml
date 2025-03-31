@@ -11,7 +11,10 @@ authors = [
 ]
 description = "scaffold"
 readme = "README.md"
-requires-python = ">=3.9"
+
+# N.B., argparse introduced breaking changes affecting parse_known_args
+#       [ref](https://github.com/omni-us/jsonargparse/pull/644)
+requires-python = "==3.12.3"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: POSIX",
@@ -24,8 +27,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/dustinlennon/scaffold"
-Issues = "https://github.com/dustinlennon/scaffold/issues"
+Homepage  = "https://github.com/dustinlennon/scaffold"
+Issues    = "https://github.com/dustinlennon/scaffold/issues"
 
 [tool.setuptools]
 include-package-data = true
