@@ -9,12 +9,18 @@ python3 samples/basic.py \
 
 from scaffold.params.base_params import BaseParams
 from scaffold.params.mixins import *
+from scaffold.debug import TraceClassDecorator
 
 if __name__ == '__main__':
 
   class CommonParams(NowMixin, LoggerInitMixin, JinjaTemplateMixin):
     pass
 
+  tcd = {
+    'include' : [ "from_args", "from_env", "from_dotenv", "assign_args" ],
+    'mro' : True
+  }
+  @TraceClassDecorator(**tcd)
   class BasicParams(BaseParams, CommonParams):
     _prefix = "BASIC"
 

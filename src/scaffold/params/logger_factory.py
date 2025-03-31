@@ -7,7 +7,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from scaffold.params.config import get_config
-from scaffold.params import _printf_debug
 
 class LoggerFactory(object):
   _state = None

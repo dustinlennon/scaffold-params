@@ -162,6 +162,98 @@ class NowMixin(BaseMixin):
 ```
 
 
+scaffold.debug
+===
+
+When debugging, it's often helpful to enable trace-level logging.  The `scaffold.debug` package contains the `TraceClassDecorator` for this purpose.  Using `BasicParams` as an example, we might want to inspect methods related to locating a config file:
+
+```python
+tcd_config_search = {
+  'include' : [ "from_args", "from_env", "from_dotenv" ],
+  'mro' : True
+}
+```
+
+where setting `mro` to `True` will ensure that methods defined "above" `BasicParams` in the class hierarchy are appropriately annotated.  Then,
+
+```python
+  @TraceClassDecorator(**tcd_config_search)
+  class BasicParams(BaseParams, CommonParams):
+    _prefix = "BASIC"
+```
+
+will generate
+
+```
+Loading .env environment variables...
+BaseParams.from_args(<class '__main__.BasicParams'>,Parser=<class
+'scaffold.params.exception_throwing_parser.ExceptionThrowingParser'>, args=None, namespace=None)
+BaseParams.from_env(<class '__main__.BasicParams'>)
+BaseParams.from_dotenv(<class '__main__.BasicParams'>)
+2025-03-31 15:41:23 | __main__ | INFO | The time is: 08:41 PDT
+>>>
+
+    Template
+    ---
+
+    The time is: 08:41 PDT
+
+<<<
+```
+
+indicating that `from_args`, `from_env`, and `from_dotenv` were all called.  See the section "YAML Config Search" below.
+
+
+### example: mixins
+
+We might also want to understand how the mixin `assign_args` methods are called.  To accomplish this with the `TraceDecoratorClass`, use the following:
+
+```python
+tcd_mixins = {
+  'include' : [ "assign_args" ],
+  'mro' : True
+}
+
+@TraceClassDecorator(**tcd_mixins)
+class BasicParams(BaseParams, CommonParams):
+  _prefix = "BASIC"
+```
+
+This outputs:
+
+```
+Loading .env environment variables...
+BaseParams.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
+log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
+..NowMixin.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+..template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
+..log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
+....LoggerInitMixin.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+....template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
+....log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
+......JinjaTemplateMixin.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+......template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
+......log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
+........BaseMixin.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+........template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
+........log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
+2025-03-31 15:58:23 | __main__ | INFO | The time is: 08:58 PDT
+>>>
+
+    Template
+    ---
+
+    The time is: 08:58 PDT
+
+<<<
+```
+
+This permits an understanding of the underlying `super().assign_args` calls by inspection.
+
+In a properly equipped bash console, ansi escape codes are used to produce more easily readable colored text.
+
+
 YAML Config Search
 ===
 

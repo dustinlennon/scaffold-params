@@ -5,7 +5,6 @@ import re
 import argparse
 import textwrap
 
-from scaffold.params import _printf_debug
 from scaffold.params.base_mixin import BaseMixin
 from scaffold.params.config import get_config
 from scaffold.params.dotenv_reader import DotenvReader
@@ -92,7 +91,6 @@ class BaseParams(BaseMixin):
 
   def assign_args(self, args):
     # the mixin hook
-    _printf_debug("BaseParams.assign_args")
     super().assign_args(args)
     self.install_path = str(args.install_path)
 
@@ -127,7 +125,6 @@ class BaseParams(BaseMixin):
 
   @classmethod
   def from_args(cls, Parser = argparse.ArgumentParser, args = None, namespace = None):
-    _printf_debug("searching for config: trying from_args()")
     parser = Parser()
     parser.add_argument("--config", required = True, help = "a yaml config file")
 
@@ -138,7 +135,6 @@ class BaseParams(BaseMixin):
 
   @classmethod
   def from_env(cls):
-    _printf_debug("searching for config: trying from_env()")
     env_name = f"{cls._prefix}_CONFIG_PATH"
     config = os.environ[env_name]
     instance = cls(config)
@@ -146,7 +142,6 @@ class BaseParams(BaseMixin):
 
   @classmethod
   def from_dotenv(cls):
-    _printf_debug("searching for config: trying from_dotenv()")
     locs = [ p for p in 
       [
         cls._opt_path,
