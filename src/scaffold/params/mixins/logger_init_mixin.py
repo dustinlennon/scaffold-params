@@ -2,12 +2,12 @@ from scaffold.params.logger_factory import LoggerFactory, logging
 from scaffold.params.base_mixin import BaseMixin
 
 class LoggerInitMixin(BaseMixin):
-  def assign_args(self, args):
-    super().assign_args(args)
+  def assign_args(self, conf, args):
+    super().assign_args(conf, args)
     factory = LoggerFactory()
     factory.configure(
-      config_file = str(args.log_config_path),
-      logs_path   = str(args.logs_path)
+      logs_path = str(args.logs_path),
+      conf      = conf.logger
     )
     self._factory = factory
 
