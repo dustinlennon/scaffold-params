@@ -3,8 +3,8 @@ import jinja2
 from scaffold.params.base_mixin import BaseMixin
 
 class JinjaTemplateMixin(BaseMixin):
-  def assign_args(self, args):
-    super().assign_args(args)
+  def assign_args(self, conf, args):
+    super().assign_args(conf, args)
     self._j2env = jinja2.Environment(
       loader = jinja2.FileSystemLoader(str(args.template_path))
     )

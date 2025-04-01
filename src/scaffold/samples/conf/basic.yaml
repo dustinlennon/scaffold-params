@@ -5,7 +5,6 @@ env_timezone: &timezone
   timezone: US/Pacific
 
 env_logger: &logger
-  log_config_path: !env ${SCAFFOLD_PATH}/samples/conf/logger.yaml
   logs_path: ./logs
 
 env_template: &template
@@ -14,5 +13,23 @@ env_template: &template
 env:
   <<: [*base, *logger, *timezone, *template]
 
-aux:
-  version: 0.0.1
+conf: 
+  logger:
+    loggers:
+    #   An item without a `qualname` will be treated as a root logger provided it
+    #   is instantiated.  
+    #   
+    #   If `logfile`` is not specified, LoggerFactory will attach a console handler.
+    #
+    #   `propagate`, a boolean,  will have no effect if the root logger is not
+    #   instantiated.  It defaults to True, as in the logging package.
+    #
+    #   `add_console`, a boolean, is available, and introduces an additional
+    #    console handler for the given logger.  It defaults to False.
+    - level: WARNING
+
+    - qualname: __main__
+      level: INFO
+      logfile: basic.log
+      propagate: False
+      add_console: True

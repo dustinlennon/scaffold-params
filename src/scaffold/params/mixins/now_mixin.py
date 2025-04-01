@@ -2,8 +2,8 @@ import datetime, pytz
 from scaffold.params.base_mixin import BaseMixin
 
 class NowMixin(BaseMixin):
-  def assign_args(self, args):
-    super().assign_args(args)
+  def assign_args(self, conf, args):
+    super().assign_args(conf, args)
     self.timezone = args.timezone
 
   def now(self) -> datetime:

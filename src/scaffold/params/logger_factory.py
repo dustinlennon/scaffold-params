@@ -6,7 +6,7 @@ from pathlib import Path
 import logging
 from logging.handlers import RotatingFileHandler
 
-from scaffold.params.config import get_config
+from scaffold.params.config import Config
 
 class LoggerFactory(object):
   _state = None
@@ -36,11 +36,10 @@ class LoggerFactory(object):
 
     setattr(type(self), "_state", self.__dict__)
 
-  def configure(self, config_file, logs_path):
-    config = get_config(config_file, preprocess = False)
+  def configure(self, logs_path, conf):
     self._configured  = True
-    self._config      = config
     self._logs_path   = logs_path
+    self._config      = Config.as_dict(conf)
 
   def assert_writable_logfile(self, logfile) -> str:
     p = Path(self._logs_path).joinpath(logfile).absolute()
@@ -113,10 +112,12 @@ class LoggerFactory(object):
 
 
 if __name__ == '__main__':
+  c = Config.get_config("src/scaffold/samples/conf/basic.yaml", ns = True)
+
   factory = LoggerFactory()
   factory.configure(
-    config_file = "src/scaffold/samples/conf/logger.yaml", 
-    logs_path = "/tmp/scaffold-logs"
+    logs_path = "/tmp/scaffold-logs",
+    conf = c.conf.logger
   )
 
   # As in `logging`, one should explictly create the root logger if
