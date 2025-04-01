@@ -9,6 +9,11 @@
 #   gitpip.sh dest_dir
 #
 
+if [ -z ${SCAFFOLD_VERSION+x} ]; then
+	echo "set SCAFFOLD_VERSION before proceeding"
+	exit 1
+fi
+
 args=("$@")
 
 if [ ${#args[@]} -ne 1 ]; then
@@ -29,14 +34,13 @@ if [ ! -f Pipfile ]; then
 fi
 
 # pipenv install file://${HOME}/Workspace/Sandbox/scaffold-params#egg=scaffold
-pipenv install git+https://github.com/dustinlennon/scaffold-params@v0.0.3#egg=scaffold
+pipenv install git+https://github.com/dustinlennon/scaffold-params@${SCAFFOLD_VERSION}#egg=scaffold
 
 # make samples easily available
 scaffold_path=$(pipenv run python -c "import scaffold; print(scaffold.__path__[0])")
-
 ln -s ${scaffold_path}/samples
 
-cat << EOF > dotenv
-BASIC_CONFIG_PATH=${scaffold_path}/samples/conf/basic.yaml
-EOF
+# cat << EOF > dotenv
+# BASIC_CONFIG_PATH=${scaffold_path}/samples/conf/basic.yaml
+# EOF
 

@@ -39,7 +39,8 @@ class LoggerFactory(object):
   def configure(self, logs_path, conf):
     self._configured  = True
     self._logs_path   = logs_path
-    self._config      = Config.as_dict(conf)
+    # self._config      = Config.as_dict(conf)
+    self._loggers     = self._create_loggers(conf)
 
   def assert_writable_logfile(self, logfile) -> str:
     p = Path(self._logs_path).joinpath(logfile).absolute()
@@ -67,42 +68,61 @@ class LoggerFactory(object):
     handler.setFormatter(self._formatter)
     return handler
 
+  def has_prefix(self, qualname, prefix):
+    z = qualname.split(".")
+    prefixes = [ ".".join(z[:i]) for i in range(len(z)+1) ]
+    return prefix in prefixes
+
+  def _create_loggers(self, conf):
+    available = sorted(
+      Config.as_dict(conf.loggers),
+      key = lambda i: i.get("qualname", "")
+    )
+    
+    loggers = {}
+    for item in available:
+      qualname    = item.get("qualname", "")
+      logfile     = item.get("logfile")
+      add_console = item.get("add_console", False)
+      propagate   = item.get("propagate", True)
+      level       = self.map_level(
+                      item.get("level", "WARNING")
+                    )
+      logger = logging.getLogger(qualname)
+
+      if logfile:
+        handler = self.handler(logfile)
+        
+        if handler not in logger.handlers:
+          logger.addHandler(handler)
+      else:
+        add_console = True
+
+      if add_console:
+        if self._console_handler not in logger.handlers:
+          logger.addHandler(self._console_handler)    
+
+      logger.propagate = propagate
+      logger.setLevel(level)
+
+      loggers[qualname] = logger
+
+    return loggers
+
   def __call__(self, qualname = None) -> logging.Logger:
     if self._configured == False:
       raise RuntimeError("LoggerFactory must call configure prior to instantiating loggers")
 
-    items = [ item for item in self._config['loggers']
-              if item.get("qualname") == qualname ]
-    if len(items) == 0:
-      raise AssertionError(f"{qualname} is not defined")
-    elif len(items) > 1:
-      raise AssertionError(f"{qualname} is defined multiple times")
+    # logger fallback logic: assume root logger is defined, use longest prefix
+    qualified = { k:v for k,v in self._loggers.items()
+                 if self.has_prefix(qualname, k) }
+    best = ''
+    for prefix in qualified.keys():
+      if len(prefix) > len(best):
+        best = prefix
+    logger = self._loggers[best]
     
-    item  = items[0]
-
-    logfile     = item.get("logfile")
-    add_console = item.get("add_console", False)
-    propagate   = item.get("propagate", True)
-    level       = self.map_level(
-                    item.get("level", "WARNING")
-                  )
-
-    logger = logging.getLogger(qualname)
-
-    if logfile:
-      handler = self.handler(logfile)
-      
-      if handler not in logger.handlers:
-        logger.addHandler(handler)
-    else:
-      add_console = True
-
-    if add_console:
-      if self._console_handler not in logger.handlers:
-        logger.addHandler(self._console_handler)    
-
-    logger.propagate = propagate
-    logger.setLevel(level)
+    logger.debug(f"LoggerFactory: using configuration '{best}'")
     return logger
   
   @classmethod
