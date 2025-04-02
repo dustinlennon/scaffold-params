@@ -85,12 +85,12 @@ class BaseParams(BaseMixin):
 
   def _parse_args(self, args = None, namespace = None):
     args = self._parser.parse_args(args, namespace)
-    self.assign_args(self._conf, args)
+    self.assign_params(self._conf, args)
     self._args = args
 
-  def assign_args(self, conf, args):
+  def assign_params(self, conf, args):
     # the mixin hook
-    super().assign_args(conf, args)
+    super().assign_params(conf, args)
     self.install_path = str(args.install_path)
 
   @classmethod

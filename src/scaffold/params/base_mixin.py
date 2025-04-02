@@ -1,3 +1,3 @@
 class BaseMixin(object):
-  def assign_args(self, conf, args):
+  def assign_params(self, conf, args):
     pass

@@ -1,6 +1,19 @@
 #!/usr/bin/bash
 
-LOGS_PATH=${BASIC_LOGS_PATH:-/var/log/scaffold-logs}
+LOGS_PATH=${SCAFFOLD_LOGS_PATH:-/var/log/scaffold}
+
+if [ -z ${SCAFFOLD_IMAGE_NAME+x} ]; then
+	echo "Error: SCAFFOLD_IMAGE_NAME is unset"
+	exit 1
+fi
+
+
+if [ ! -f build_dirs.txt ]; then
+	echo "Error: build_dirs.txt not found"
+	exit 1
+fi
+
+archive=$(<build_dirs.txt)
 
 if [ ! -d "$LOGS_PATH" ]; then
 	>&2 echo "Creating log directory: $LOGS_PATH"
@@ -16,13 +29,14 @@ fi
 
 >&2 echo "Creating archive.tgz"
 tar \
-	--exclude='*/__pycache__/*' \
-	-czf archive.tgz src/scaffold	
+	--exclude='__pycache__' \
+	-czf archive.tgz ${archive[@]}
+
 
 >&2 echo "Creating requirements.txt"
 pipenv requirements > requirements.txt
 
->&2 echo "Building image: scaffold-sample.latest"
+>&2 echo "Building image: $SCAFFOLD_IMAGE_NAME"
 docker build \
-	--tag scaffold-sample:latest \
+	--tag ${SCAFFOLD_IMAGE_NAME}:latest \
 	.

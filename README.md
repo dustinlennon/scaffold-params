@@ -144,7 +144,7 @@ The YAML keys defined in `env` have a correspondence with command line flags and
 
 Mixins are a useful way to package and group functionality that is associated with disparate parameter sets.  [NowMixin.py](https://github.com/dustinlennon/scaffold-params/blob/main/src/scaffold/params/mixins/now_mixin.py) is probably the simplest.
 
-The idea is to keep it simple.  We inherit from `BaseMixin` and implement the `assign_args` method.  On initialization, we only need copy the provided timezone from `args` to the instance.  For post-initialization use, `NowMixin` provides the `now` method that ensures that a datetime instance is timezone aware and created with a timezone specified apriori.
+The idea is to keep it simple.  We inherit from `BaseMixin` and implement the `assign_params` method.  On initialization, we only need copy the provided timezone from `args` to the instance.  For post-initialization use, `NowMixin` provides the `now` method that ensures that a datetime instance is timezone aware and created with a timezone specified apriori.
 
 ```python
 # params/mixins/now_mixin.py
@@ -152,8 +152,8 @@ import datetime, pytz
 from .base_mixin import BaseMixin
 
 class NowMixin(BaseMixin):
-  def assign_args(self, args):
-    super().assign_args(args)
+  def assign_params(self, conf, args):
+    super().assign_params(conf, args)
     self.timezone = args.timezone
 
   def now(self) -> datetime:
@@ -206,11 +206,11 @@ indicating that `from_args`, `from_env`, and `from_dotenv` were all called.  See
 
 ### example: mixins
 
-We might also want to understand how the mixin `assign_args` methods are called.  To accomplish this with the `TraceDecoratorClass`, use the following:
+We might also want to understand how the mixin `assign_params` methods are called.  To accomplish this with the `TraceDecoratorClass`, use the following:
 
 ```python
 tcd_mixins = {
-  'include' : [ "assign_args" ],
+  'include' : [ "assign_params" ],
   'mro' : True
 }
 
@@ -223,19 +223,19 @@ This outputs:
 
 ```
 Loading .env environment variables...
-BaseParams.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+BaseParams.assign_params(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
 template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
 log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
-..NowMixin.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+..NowMixin.assign_params(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
 ..template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
 ..log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
-....LoggerInitMixin.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+....LoggerInitMixin.assign_params(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
 ....template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
 ....log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
-......JinjaTemplateMixin.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+......JinjaTemplateMixin.assign_params(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
 ......template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
 ......log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
-........BaseMixin.assign_args(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
+........BaseMixin.assign_params(<__main__.BasicParams object at 0x7f9f1419a870>, Namespace(config=None,
 ........template_path=EnvTab("${SCAFFOLD_PATH}/samples/templates"), timezone='US/Pacific',
 ........log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='./logs', install_path=EnvTab("${PWD}")))
 2025-03-31 15:58:23 | __main__ | INFO | The time is: 08:58 PDT
@@ -249,7 +249,7 @@ log_config_path=EnvTab("${SCAFFOLD_PATH}/samples/conf/logger.yaml"), logs_path='
 <<<
 ```
 
-This permits an understanding of the underlying `super().assign_args` calls by inspection.
+This permits an understanding of the underlying `super().assign_params` calls by inspection.
 
 In a properly equipped bash console, ansi escape codes are used to produce more easily readable colored text.
 

@@ -17,7 +17,7 @@ if __name__ == '__main__':
     pass
 
   tcd = {
-    'include' : [ "from_args", "from_env", "from_dotenv", "assign_args" ],
+    'include' : [ "from_args", "from_env", "from_dotenv", "assign_params" ],
     'mro' : True
   }
   @TraceClassDecorator(**tcd)

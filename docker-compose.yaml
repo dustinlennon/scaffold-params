@@ -1,12 +1,12 @@
 # To create the image and supporting file system components, run
-# the ./build.sh script first.
+# the ./build_image.sh script first.
 
 name: basic
 
 services:
   basic:
     # docker compose -f docker-compose.yaml run --rm basic
-    image: scaffold-sample:latest
+    image: scaffold:latest
 
     command: >
       python src/scaffold/samples/basic.py
@@ -25,4 +25,4 @@ volumes:
     driver_opts:
       o: bind
       type: local
-      device: /var/log/scaffold-logs
+      device: /var/log/scaffold
