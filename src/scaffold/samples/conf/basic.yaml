@@ -27,9 +27,22 @@ conf:
     #   `add_console`, a boolean, is available, and introduces an additional
     #    console handler for the given logger.  It defaults to False.
     - level: WARNING
+      logfile: root.log
 
     - qualname: __main__
       level: INFO
-      logfile: basic.log
+      logfile: main.log
       propagate: False
       add_console: True
+
+    # - qualname: basic
+    #   level: INFO
+    #   logfile: basic.log
+    #   propagate: False
+    #   add_console: True
+
+    # - qualname: basic.app
+    #   level: INFO
+    #   logfile: basic.app.log
+    #   propagate: False
+    #   add_console: True

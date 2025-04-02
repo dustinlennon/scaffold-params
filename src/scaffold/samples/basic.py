@@ -13,7 +13,7 @@ from scaffold.debug import TraceClassDecorator
 
 if __name__ == '__main__':
 
-  class CommonParams(NowMixin, LoggerInitMixin, JinjaTemplateMixin):
+  class CommonParams(NowMixin, LoggerInitializerMixin, JinjaTemplateMixin):
     pass
 
   tcd = {
@@ -30,7 +30,8 @@ if __name__ == '__main__':
   msg = f"The time is: {params.now().strftime("%H:%M %Z")}"
 
   # LoggerInitMixin provides 'params.get_logger'
-  logger = params.get_logger(__name__)
+  qualname = __name__
+  logger = params.get_logger(qualname)
   logger.info(msg)
 
   # JinjaTemplateMixin provides 'params.get_template'

@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 
 from scaffold.params.config import Config
 
-class LoggerFactory(object):
+class LoggerInitializer(object):
   _state = None
 
   def __init__(self):
@@ -108,23 +108,7 @@ class LoggerFactory(object):
       loggers[qualname] = logger
 
     return loggers
-
-  def __call__(self, qualname = None) -> logging.Logger:
-    if self._configured == False:
-      raise RuntimeError("LoggerFactory must call configure prior to instantiating loggers")
-
-    # logger fallback logic: assume root logger is defined, use longest prefix
-    qualified = { k:v for k,v in self._loggers.items()
-                 if self.has_prefix(qualname, k) }
-    best = ''
-    for prefix in qualified.keys():
-      if len(prefix) > len(best):
-        best = prefix
-    logger = self._loggers[best]
-    
-    logger.debug(f"LoggerFactory: using configuration '{best}'")
-    return logger
-  
+ 
   @classmethod
   def map_level(cls, name : str):
     level = getattr(logging, name)
@@ -134,7 +118,7 @@ class LoggerFactory(object):
 if __name__ == '__main__':
   c = Config.get_config("src/scaffold/samples/conf/basic.yaml", ns = True)
 
-  factory = LoggerFactory()
+  factory = LoggerInitializer()
   factory.configure(
     logs_path = "/tmp/scaffold-logs",
     conf = c.conf.logger
